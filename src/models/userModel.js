@@ -1,5 +1,6 @@
 import {model, mongoose} from "mongoose";
 import bcrypt from "bcrypt";
+import { isGoodPassword } from "../utils/validators.js";
 
 const rolesEnum = ["admin", "user"];
 
@@ -36,8 +37,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please enter your password"],
         trim: true,
-        minLength: [6, "Password should be at least 6 characters"],
-        maxLength: [100, "Password should be less than 100 characters"],
+        validate: {
+            validator: function (value) {
+              return isGoodPassword(value);
+            },
+            message:
+              "Password must be between 6 and 12 characters, with at least one number, one upercase letter and one lowercase letter",
+          },
     },
     roles: {
         type: String,

@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { SECRET } from "../config.js";
 
 export const getUsers = async (req, res) => {
     try {
@@ -30,6 +31,34 @@ export const createUser = async (req, res) => {
     }
 }
 
+export const deleteUser = async (req, res) => {
+    try{
+        const {id} = req.params;
+        const user = await User.findByIdAndDelete(id);
+        if(!user){
+            return res.status(404).json({message: "User not found"});
+        }
+        return res.status(200).json({message: "User deleted"});
+    }
+    catch(error){
+        return res.status(500).json({error: error.message});
+    }
+}
+
+export const updateUser = async (req, res) => {
+    try{
+        const {id} = req.params;
+        const user = await User.findByIdAndUpdate(id, req.body, {new: true});
+        if(!user){
+            return res.status(404).json({message: "User not found"});
+        }
+        return res.status(200).json(user);
+    }
+    catch(error){
+        return res.status(500).json({error: error.message});
+    }
+}
+
 export const validateUser = async (req, res) => {
     try{
         if(!(req.body.email && req.body.password)){
@@ -46,7 +75,7 @@ export const validateUser = async (req, res) => {
              userEmail: userFound.email,
          }
 
-         const token = jwt.sign(payload,"secret", {expiresIn: "1h"});
+         const token = jwt.sign(payload,SECRET, {expiresIn: "1h"});
          const role = userFound.role;
 
          return res.status(200).json({message: "User logged in", token, role, user: {id: userFound._id, email: userFound.email}});
