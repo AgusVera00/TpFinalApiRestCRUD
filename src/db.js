@@ -1,9 +1,9 @@
 import { connect }  from "mongoose";
-import { MONGOBD_URI } from "./config.js";
+import { MONGODB_URI } from "./config.js";
 
 export const connectDB = async () => {
     try{
-        await connect("mongodb://127.0.0.1:27017/utntpfinal");
+        await connect(MONGODB_URI);
         console.log("Database connected");
     }
     catch(error){
